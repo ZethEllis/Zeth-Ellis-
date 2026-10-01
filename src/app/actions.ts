@@ -4,9 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { decodeAnswers } from "@/lib/matching";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export async function saveResult(code: string) {
-  if (!decodeAnswers(code) || !process.env.NEXT_PUBLIC_SUPABASE_URL) return;
+  if (!decodeAnswers(code) || !isSupabaseConfigured()) return;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;

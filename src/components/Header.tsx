@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { signOut } from "@/app/actions";
 
-export default async function Header() {
-  let email: string | undefined;
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+async function getEmail(): Promise<string | undefined> {
+  if (!isSupabaseConfigured()) return undefined;
+  try {
     const supabase = await createClient();
-    email = (await supabase.auth.getUser()).data.user?.email;
+    return (await supabase.auth.getUser()).data.user?.email;
+  } catch {
+    return undefined; // a Supabase hiccup must not take the whole page down
   }
+}
+
+export default async function Header() {
+  const email = await getEmail();
 
   return (
     <header className="border-b border-slate-200 bg-white">
