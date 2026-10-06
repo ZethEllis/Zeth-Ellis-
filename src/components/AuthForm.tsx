@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 /** Passwordless email sign-in (magic link). */
 export default function AuthForm() {
@@ -12,21 +13,42 @@ export default function AuthForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
-    });
-    if (error) {
+
+    if (!isSupabaseConfigured()) {
       setStatus("error");
-      setMessage(error.message);
-    } else {
-      setStatus("sent");
+      setMessage("Sign-in isn't set up on this site yet: the Supabase URL and anon key are missing or invalid in the deployment's environment variables.");
+      return;
+    }
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+      });
+      if (error) {
+        setStatus("error");
+        setMessage(
+          /rate limit/i.test(error.message)
+            ? "Too many sign-in emails were requested recently. Wait a few minutes and try again."
+            : error.message,
+        );
+      } else {
+        setStatus("sent");
+      }
+    } catch (err) {
+      setStatus("error");
+      setMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
   }
 
   if (status === "sent") {
-    return <p className="rounded-xl bg-green-50 p-4 text-green-800">Check {email} for your sign-in link.</p>;
+    return (
+      <div className="rounded-xl bg-green-50 p-4 text-green-800">
+        <p>Check <strong>{email}</strong> for your sign-in link.</p>
+        <p className="mt-1 text-sm">It can take a minute — and check your spam or junk folder.</p>
+      </div>
+    );
   }
 
   return (
@@ -45,7 +67,7 @@ export default function AuthForm() {
       >
         {status === "sending" ? "Sending…" : "Email me a sign-in link"}
       </button>
-      {status === "error" && <p className="text-sm text-red-600">{message}</p>}
+      {status === "error" && <p role="alert" className="text-sm text-red-600">{message}</p>}
     </form>
   );
 }
