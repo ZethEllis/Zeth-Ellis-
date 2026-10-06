@@ -29,7 +29,7 @@ export default function QuizRunner() {
     const code = encodeAnswers(answers, training);
     startTransition(async () => {
       await saveResult(code); // no-op when signed out
-      router.push(`/results?r=${code}`);
+      router.push(`/sandbox?r=${code}`);
     });
   }
 

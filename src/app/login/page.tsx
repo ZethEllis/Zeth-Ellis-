@@ -1,7 +1,7 @@
 import AuthForm from "@/components/AuthForm";
 import PageTitle from "@/components/PageTitle";
 
-export const metadata = { title: "Sign in — Career Compass" };
+export const metadata = { title: "Sign in — Career E-Sandbox" };
 
 export default function LoginPage() {
   return (

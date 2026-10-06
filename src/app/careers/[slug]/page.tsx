@@ -16,7 +16,7 @@ export default async function CareerPage({ params }: { params: Promise<{ slug: s
 
   return (
     <article>
-      <Link href="/quiz" className="text-sm text-slate-500 hover:text-slate-900">← Back to quiz</Link>
+      <Link href="/sandbox" className="text-sm text-slate-500 hover:text-slate-900">← Back to sandbox</Link>
       <div className="mt-4 flex items-start justify-between gap-4">
         <h1 className="text-3xl font-bold">{career.title}</h1>
         <SaveOrSignIn slug={slug} saved={saved} canSave={!!userId} />

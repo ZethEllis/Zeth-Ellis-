@@ -8,7 +8,7 @@ export default function PastResults({ results }: { results: { id: string; code: 
       <ul className="mt-3 grid gap-2">
         {results.map((r) => (
           <li key={r.id}>
-            <Link href={`/results?r=${r.code}`} className="text-brand-600 hover:underline">
+            <Link href={`/sandbox?r=${r.code}`} className="text-brand-600 hover:underline">
               {new Date(r.created_at).toLocaleDateString()}
             </Link>
           </li>

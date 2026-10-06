@@ -1,5 +1,5 @@
 import { QUESTIONS } from "./quiz";
-import { DIMENSIONS, type Career, type CareerMatch, type Profile, type TrainingLevel } from "./types";
+import { DIMENSIONS, type Profile, type TrainingLevel } from "./types";
 
 /** Average the 1..5 answers per dimension into a 0..1 profile. `answers` is ordered like QUESTIONS. */
 export function scoreAnswers(answers: number[]): Profile {
@@ -17,23 +17,7 @@ export function scoreAnswers(answers: number[]): Profile {
   ) as Profile;
 }
 
-/** Compare the user's profile to each career; closer profile = higher score. Careers needing more training than the user wants are penalised. */
-export function matchCareers(profile: Profile, maxTraining: TrainingLevel, careers: Career[]): CareerMatch[] {
-  return careers
-    .map((c) => {
-      const diff = DIMENSIONS.reduce((s, d) => s + Math.abs(profile[d] - c.riasec[d]), 0) / DIMENSIONS.length;
-      let score = (1 - diff) * 100;
-      if (c.training_level > maxTraining) score -= 15 * (c.training_level - maxTraining);
-      return { ...c, score: Math.max(0, Math.round(score)) };
-    })
-    .sort((a, b) => b.score - a.score);
-}
-
-export function topTraits(profile: Profile, n = 3) {
-  return [...DIMENSIONS].sort((a, b) => profile[b] - profile[a]).slice(0, n);
-}
-
-/** Profile <-> URL helpers so results are shareable and need no login. */
+/** Profile <-> URL helpers so quiz results can seed the sandbox without a login. */
 export function encodeAnswers(answers: number[], training: TrainingLevel) {
   return `${answers.join("")}-${training}`;
 }

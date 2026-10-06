@@ -5,7 +5,7 @@ import { getCareers } from "@/lib/careers";
 import { createClient } from "@/lib/supabase/server";
 import { getSavedSlugs } from "@/lib/user";
 
-export const metadata = { title: "My shortlist — Career Compass" };
+export const metadata = { title: "My shortlist — Career E-Sandbox" };
 
 export default async function DashboardPage() {
   const supabase = await createClient();
