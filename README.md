@@ -23,6 +23,13 @@ npm run dev
 5. Authentication → URL Configuration: set Site URL to your Vercel URL and add
    `http://localhost:3000/auth/callback` and `https://YOUR-APP.vercel.app/auth/callback` as redirect URLs.
 
+### Sign-in options
+
+The login page offers Google, GitHub, an emailed magic link, and email + password.
+Magic link and password work with the default Email provider. Google and GitHub each need to be switched on under
+Authentication → Providers in Supabase, with a Client ID and Secret from Google Cloud Console / GitHub Developer Settings.
+Use the callback URL Supabase shows on that provider's page as the redirect URI.
+
 ## Vercel
 
 ```bash
