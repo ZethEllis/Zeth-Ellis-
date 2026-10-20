@@ -9,6 +9,7 @@ function withDefaults(row: Career): Career {
   return {
     ...row,
     prefs: row.prefs ?? bundled?.prefs ?? { independence: 0.5, social: 0.5, creativity: 0.5, stability: 0.5, income: 0.5 },
+    work_settings: row.work_settings?.length ? row.work_settings : bundled?.work_settings ?? [],
     outlook_score: bundled && row.outlook_score === 0.5 ? bundled.outlook_score : row.outlook_score ?? 0.5,
   };
 }
@@ -20,7 +21,10 @@ export async function getCareers(): Promise<Career[]> {
     const supabase = await createClient();
     const { data, error } = await supabase.from("careers").select("*");
     if (error || !data?.length) return CAREERS;
-    return (data as Career[]).map(withDefaults);
+    const rows = (data as Career[]).map(withDefaults);
+    // Careers added to the bundled list but not seeded yet still show up.
+    const inDb = new Set(rows.map((c) => c.slug));
+    return [...rows, ...CAREERS.filter((c) => !inDb.has(c.slug))];
   } catch {
     return CAREERS;
   }

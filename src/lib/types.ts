@@ -18,6 +18,10 @@ export type Prefs = Record<PrefKey, number>; // each 0..1
 export const LENSES = ["interests", "workstyle", "practical"] as const;
 export type Lens = (typeof LENSES)[number];
 
+/** Where the work usually happens. */
+export const WORK_SETTINGS = ["remote", "office", "onsite", "outdoors"] as const;
+export type WorkSetting = (typeof WORK_SETTINGS)[number];
+
 /** 1 = under a year, 2 = ~2 years, 3 = 4+ years */
 export type TrainingLevel = 1 | 2 | 3;
 
@@ -33,6 +37,7 @@ export interface Career {
   riasec: Profile;
   prefs: Prefs; // how the work typically feels: how independent, social, creative, stable, high-paying
   skills: string[];
+  work_settings: WorkSetting[];
 }
 
 /** Everything the user can change in the sandbox. */
@@ -41,4 +46,6 @@ export interface Scenario {
   prefs: Prefs;
   maxTraining: TrainingLevel;
   weights: Record<Lens, number>; // how much each lens counts, 0..1
+  /** Only show careers done in one of these settings; empty or missing = all. */
+  settings?: WorkSetting[];
 }

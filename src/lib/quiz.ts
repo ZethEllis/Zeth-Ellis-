@@ -1,4 +1,4 @@
-import type { Dimension, TrainingLevel } from "./types";
+import type { Dimension, PrefKey, TrainingLevel } from "./types";
 
 export interface Question {
   id: number;
@@ -20,6 +20,15 @@ export const QUESTIONS: Question[] = [
   { id: 10, dimension: "enterprising", text: "I'm comfortable taking risks to reach a big goal." },
   { id: 11, dimension: "conventional", text: "I like clear processes, organization, and getting details right." },
   { id: 12, dimension: "conventional", text: "I'm happiest when tasks are structured and predictable." },
+];
+
+// One statement per work-style preference, answered on the same scale; these seed the sandbox's work-style sliders.
+export const WORKSTYLE_QUESTIONS: { key: PrefKey; text: string }[] = [
+  { key: "independence", text: "I do my best work on my own, without someone checking in." },
+  { key: "social", text: "I want to be talking with and around people for most of my day." },
+  { key: "creativity", text: "I'd rather figure out my own way than follow clear instructions." },
+  { key: "stability", text: "A steady, secure job matters more to me than excitement." },
+  { key: "income", text: "Earning a high income is one of my top priorities." },
 ];
 
 export const LIKERT = [

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { LIKERT, QUESTIONS, TRAINING_OPTIONS } from "@/lib/quiz";
+import { LIKERT, QUESTIONS, TRAINING_OPTIONS, WORKSTYLE_QUESTIONS } from "@/lib/quiz";
 import { encodeAnswers } from "@/lib/matching";
 import { saveResult } from "@/app/actions";
 import type { TrainingLevel } from "@/lib/types";
@@ -15,8 +15,9 @@ export default function QuizRunner() {
   const [answers, setAnswers] = useState<number[]>([]);
   const [pending, startTransition] = useTransition();
 
-  const total = QUESTIONS.length + 1; // + training question
-  const onTraining = step === QUESTIONS.length;
+  const statements = [...QUESTIONS.map((q) => q.text), ...WORKSTYLE_QUESTIONS.map((q) => q.text)];
+  const total = statements.length + 1; // + training question
+  const onTraining = step === statements.length;
 
   function answer(value: number) {
     const next = [...answers];
@@ -46,7 +47,12 @@ export default function QuizRunner() {
           onSelect={(v) => finish(v as TrainingLevel)}
         />
       ) : (
-        <QuestionCard title={QUESTIONS[step].text} options={LIKERT} onSelect={answer} />
+        <>
+          {step === QUESTIONS.length && (
+            <p className="mb-3 text-sm font-medium text-brand-700">Now a few about how you like to work.</p>
+          )}
+          <QuestionCard title={statements[step]} options={LIKERT} onSelect={answer} />
+        </>
       )}
 
       {step > 0 && !pending && (

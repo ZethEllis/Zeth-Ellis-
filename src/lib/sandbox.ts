@@ -8,6 +8,7 @@ import {
   type PrefKey,
   type Profile,
   type Scenario,
+  type WorkSetting,
 } from "./types";
 
 export const DIM_LABEL: Record<Dimension, string> = {
@@ -26,6 +27,19 @@ export const PREF_LABEL: Record<PrefKey, string> = {
   stability: "job stability",
   income: "high income",
 };
+
+export const SETTING_LABEL: Record<WorkSetting, string> = {
+  remote: "Remote-friendly",
+  office: "In an office",
+  onsite: "On-site (hospital, school, shop, job site)",
+  outdoors: "Outdoors or on the move",
+};
+
+/** Careers that happen in at least one of the chosen settings; no choice means all of them. */
+export function filterBySetting(careers: Career[], settings: WorkSetting[] | undefined) {
+  if (!settings?.length) return careers;
+  return careers.filter((c) => c.work_settings.some((w) => settings.includes(w)));
+}
 
 export const LENS_LABEL: Record<Lens, string> = {
   interests: "Interests",
