@@ -24,6 +24,9 @@ export default async function CareerPage({ params }: { params: Promise<{ slug: s
       <p className="mt-3 text-lg text-slate-600">{career.summary}</p>
       <CareerFacts career={career} />
       <SkillTags skills={career.skills} />
+      <Link href={`/compare?c=${slug}`} className="mt-8 inline-block rounded-xl border border-slate-300 bg-white px-5 py-2.5 font-medium hover:border-brand-500">
+        Compare with other careers
+      </Link>
     </article>
   );
 }

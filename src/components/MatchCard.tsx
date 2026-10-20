@@ -54,7 +54,10 @@ export default function MatchCard({
         <button onClick={toggle} aria-expanded={open} className="font-medium text-brand-600 hover:underline">
           {open ? "Hide the reasoning" : "Why this career?"}
         </button>
-        <SaveOrSignIn slug={career.slug} saved={saved} canSave={canSave} />
+        <div className="flex items-center gap-4">
+          <Link href={`/compare?c=${career.slug}`} className="text-slate-500 hover:text-brand-600">Compare</Link>
+          <SaveOrSignIn slug={career.slug} saved={saved} canSave={canSave} />
+        </div>
       </div>
 
       {open && (

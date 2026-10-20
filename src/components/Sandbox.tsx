@@ -8,15 +8,16 @@ import ResultSection from "./ResultSection";
 import ScenarioControls from "./ScenarioControls";
 import ScenarioHistory from "./ScenarioHistory";
 import SelfNotes from "./SelfNotes";
-import { DEFAULT_SCENARIO, evaluate, groupResults, summarize, type Snapshot } from "@/lib/sandbox";
+import { DEFAULT_SCENARIO, evaluate, filterBySetting, groupResults, summarize, type Snapshot } from "@/lib/sandbox";
 import { usePersistedState } from "@/lib/usePersistedState";
-import type { Career, Profile, Scenario, TrainingLevel } from "@/lib/types";
+import type { Career, Prefs, Profile, Scenario, TrainingLevel } from "@/lib/types";
 
 export default function Sandbox({
-  careers, seed, seedTraining, canSave, savedSlugs,
+  careers, seed, seedPrefs, seedTraining, canSave, savedSlugs,
 }: {
   careers: Career[];
   seed?: Profile;
+  seedPrefs?: Prefs;
   seedTraining?: TrainingLevel;
   canSave: boolean;
   savedSlugs: string[];
@@ -28,12 +29,15 @@ export default function Sandbox({
   const [viewed, setViewed] = usePersistedState<string[]>("sandbox:viewed", []);
   const [showMobileControls, setShowMobileControls] = useState(false);
 
-  // A fresh quiz result seeds the interest sliders; runs after the stored scenario loads.
+  // A fresh quiz result seeds the interest and work-style sliders; runs after the stored scenario loads.
   useEffect(() => {
-    if (seed) setScenario((s) => ({ ...s, interests: seed, maxTraining: seedTraining ?? s.maxTraining }));
-  }, [seed, seedTraining, setScenario]);
+    if (seed) {
+      setScenario((s) => ({ ...s, interests: seed, prefs: seedPrefs ?? s.prefs, maxTraining: seedTraining ?? s.maxTraining }));
+    }
+  }, [seed, seedPrefs, seedTraining, setScenario]);
 
-  const evals = useMemo(() => evaluate(scenario, careers), [scenario, careers]);
+  const visible = useMemo(() => filterBySetting(careers, scenario.settings), [careers, scenario.settings]);
+  const evals = useMemo(() => evaluate(scenario, visible), [scenario, visible]);
   const groups = useMemo(() => groupResults(scenario, evals), [scenario, evals]);
   const titleOf = (slug: string) => careers.find((c) => c.slug === slug)?.title ?? slug;
   const saved = new Set(savedSlugs);
@@ -77,6 +81,7 @@ export default function Sandbox({
           <h1 className="text-3xl font-bold">Your sandbox</h1>
           <p className="mt-2 text-slate-600">
             Nothing here is a verdict. Move the sliders, open the reasoning, and see what changes.
+            {visible.length < careers.length && <> Showing the <strong>{visible.length}</strong> of {careers.length} careers that match where you want to work.</>}
             {exploredCount > 0 && <> You&apos;ve looked closely at <strong>{exploredCount}</strong> {exploredCount === 1 ? "career" : "careers"} so far.</>}
           </p>
         </header>

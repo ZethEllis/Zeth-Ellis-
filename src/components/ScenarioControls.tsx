@@ -2,8 +2,8 @@
 
 import Slider from "./Slider";
 import { TRAINING_OPTIONS } from "@/lib/quiz";
-import { DIM_LABEL, LENS_HELP, LENS_LABEL, PREF_LABEL } from "@/lib/sandbox";
-import { DIMENSIONS, LENSES, PREF_KEYS, type Scenario, type TrainingLevel } from "@/lib/types";
+import { DIM_LABEL, LENS_HELP, LENS_LABEL, PREF_LABEL, SETTING_LABEL } from "@/lib/sandbox";
+import { DIMENSIONS, LENSES, PREF_KEYS, WORK_SETTINGS, type Scenario, type TrainingLevel, type WorkSetting } from "@/lib/types";
 
 const PREF_ENDS: Record<(typeof PREF_KEYS)[number], [string, string]> = {
   independence: ["Prefer teamwork", "Prefer working solo"],
@@ -26,6 +26,10 @@ function Group({ title, note, children }: { title: string; note?: string; childr
 export default function ScenarioControls({
   scenario, onChange, onReset,
 }: { scenario: Scenario; onChange: (s: Scenario) => void; onReset: () => void }) {
+  const settings = scenario.settings ?? [];
+  const toggleSetting = (w: WorkSetting) =>
+    onChange({ ...scenario, settings: settings.includes(w) ? settings.filter((x) => x !== w) : [...settings, w] });
+
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
@@ -69,6 +73,22 @@ export default function ScenarioControls({
                 className="mt-1 accent-brand-600"
               />
               <span><span className="font-medium">{o.label}</span> <span className="text-slate-500">— {o.hint}</span></span>
+            </label>
+          ))}
+        </div>
+      </Group>
+
+      <Group title="Where you want to work" note="Leave all unticked to see every career.">
+        <div className="grid gap-2">
+          {WORK_SETTINGS.map((w) => (
+            <label key={w} className="flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={settings.includes(w)}
+                onChange={() => toggleSetting(w)}
+                className="accent-brand-600"
+              />
+              {SETTING_LABEL[w]}
             </label>
           ))}
         </div>

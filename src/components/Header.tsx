@@ -22,7 +22,7 @@ export default async function Header() {
         <Link href="/" className="text-lg font-bold text-brand-700">🧭 Career E-Sandbox</Link>
         <div className="flex items-center gap-4 text-sm">
           <Link href="/sandbox" className="hover:text-brand-600">Sandbox</Link>
-          <Link href="/principles" className="hover:text-brand-600">Principles</Link>
+          <Link href="/compare" className="hover:text-brand-600">Compare</Link>
           <Link href="/quiz" className="hover:text-brand-600">Quiz</Link>
           {email ? (
             <>

@@ -1,5 +1,5 @@
-import { QUESTIONS } from "./quiz";
-import { DIMENSIONS, type Profile, type TrainingLevel } from "./types";
+import { QUESTIONS, WORKSTYLE_QUESTIONS } from "./quiz";
+import { DIMENSIONS, type Prefs, type Profile, type TrainingLevel } from "./types";
 
 /** Average the 1..5 answers per dimension into a 0..1 profile. `answers` is ordered like QUESTIONS. */
 export function scoreAnswers(answers: number[]): Profile {
@@ -17,13 +17,20 @@ export function scoreAnswers(answers: number[]): Profile {
   ) as Profile;
 }
 
+/** Work-style answers follow the interest answers; older codes without them return null. */
+export function scorePrefs(answers: number[]): Prefs | null {
+  const rest = answers.slice(QUESTIONS.length);
+  if (rest.length < WORKSTYLE_QUESTIONS.length) return null;
+  return Object.fromEntries(WORKSTYLE_QUESTIONS.map((q, i) => [q.key, (Math.min(5, Math.max(1, rest[i])) - 1) / 4])) as Prefs;
+}
+
 /** Profile <-> URL helpers so quiz results can seed the sandbox without a login. */
 export function encodeAnswers(answers: number[], training: TrainingLevel) {
   return `${answers.join("")}-${training}`;
 }
 
 export function decodeAnswers(code: string | undefined) {
-  const m = code?.match(/^([1-5]{12})-([123])$/);
+  const m = code?.match(/^([1-5]{12}|[1-5]{17})-([123])$/);
   if (!m) return null;
   return { answers: m[1].split("").map(Number), training: Number(m[2]) as TrainingLevel };
 }
