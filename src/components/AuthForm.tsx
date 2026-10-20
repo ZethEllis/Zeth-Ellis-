@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -16,9 +16,7 @@ const friendly = (message: string) =>
     ? "Too many sign-in emails were requested recently. Wait a few minutes and try again."
     : /invalid login credentials/i.test(message)
       ? "That email and password don't match. Check them, or create an account."
-      : /provider is not enabled/i.test(message)
-        ? "This sign-in option hasn't been switched on yet. Try another way for now."
-        : message;
+      : message;
 
 const callbackUrl = () => `${window.location.origin}/auth/callback?next=/dashboard`;
 
@@ -54,9 +52,28 @@ const GitHubIcon = (
   </svg>
 );
 
+type Provider = "google" | "github";
+
+/** Asks Supabase which social providers are switched on, so buttons only show once they'll work. */
+function useEnabledProviders(): Provider[] {
+  const [enabled, setEnabled] = useState<Provider[]>([]);
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim();
+    fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((s: { external?: Record<string, boolean> } | null) =>
+        setEnabled((["google", "github"] as const).filter((p) => s?.external?.[p])))
+      .catch(() => {});
+  }, []);
+  return enabled;
+}
+
 /** Sign in with Google, GitHub, an emailed link, or an email and password. */
 export default function AuthForm({ initialError }: { initialError?: string }) {
   const router = useRouter();
+  const providers = useEnabledProviders();
   const [mode, setMode] = useState<Mode>("link");
   const [creating, setCreating] = useState(false);
   const [email, setEmail] = useState("");
@@ -81,7 +98,7 @@ export default function AuthForm({ initialError }: { initialError?: string }) {
     }
   }
 
-  const withProvider = (provider: "google" | "github") =>
+  const withProvider = (provider: Provider) =>
     attempt(async (supabase) => {
       const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: callbackUrl() } });
       if (error) fail(error.message); // on success the browser leaves for the provider's sign-in page
@@ -138,14 +155,21 @@ export default function AuthForm({ initialError }: { initialError?: string }) {
 
   return (
     <div className="grid gap-5">
-      <div className="grid gap-3">
-        <ProviderButton label="Continue with Google" icon={GoogleIcon} onClick={() => withProvider("google")} disabled={busy} />
-        <ProviderButton label="Continue with GitHub" icon={GitHubIcon} onClick={() => withProvider("github")} disabled={busy} />
-      </div>
-
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" />or use your email<span className="h-px flex-1 bg-slate-200" />
-      </div>
+      {providers.length > 0 && (
+        <>
+          <div className="grid gap-3">
+            {providers.includes("google") && (
+              <ProviderButton label="Continue with Google" icon={GoogleIcon} onClick={() => withProvider("google")} disabled={busy} />
+            )}
+            {providers.includes("github") && (
+              <ProviderButton label="Continue with GitHub" icon={GitHubIcon} onClick={() => withProvider("github")} disabled={busy} />
+            )}
+          </div>
+          <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
+            <span className="h-px flex-1 bg-slate-200" />or use your email<span className="h-px flex-1 bg-slate-200" />
+          </div>
+        </>
+      )}
 
       <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
         {tab("link", "Email me a link")}
