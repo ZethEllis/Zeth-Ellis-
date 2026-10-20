@@ -11,6 +11,9 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(`${origin}${safeNext}`);
+    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
   }
-  return NextResponse.redirect(`${origin}/login`);
+  // Google/GitHub send the reason back here when sign-in is cancelled or not set up.
+  const reason = searchParams.get("error_description") ?? "the sign-in link was invalid or expired";
+  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(reason)}`);
 }
