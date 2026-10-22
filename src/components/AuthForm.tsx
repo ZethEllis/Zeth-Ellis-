@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/config";
 
 type Mode = "link" | "password";
 type Status = "idle" | "working" | "sent" | "error";
@@ -59,8 +59,8 @@ function useEnabledProviders(): Provider[] {
   const [enabled, setEnabled] = useState<Provider[]>([]);
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim();
+    const url = supabaseUrl();
+    const key = supabaseAnonKey();
     fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } })
       .then((r) => (r.ok ? r.json() : null))
       .then((s: { external?: Record<string, boolean> } | null) =>
