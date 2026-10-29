@@ -1,12 +1,13 @@
 import CompareView from "@/components/CompareView";
 import { getCareers } from "@/lib/careers";
+import { getUserId } from "@/lib/user";
 
 export const metadata = { title: "Compare careers — Career E-Sandbox" };
 
 export default async function ComparePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;
-  const careers = await getCareers();
+  const [careers, userId] = await Promise.all([getCareers(), getUserId()]);
   const known = new Set(careers.map((x) => x.slug));
   const initial = (c ?? "").split(",").filter((s) => known.has(s)).slice(0, 3);
-  return <CompareView careers={careers} initial={initial} />;
+  return <CompareView careers={careers} initial={initial} signedIn={Boolean(userId)} />;
 }

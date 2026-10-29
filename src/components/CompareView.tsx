@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { DIM_LABEL, PREF_LABEL, SETTING_LABEL } from "@/lib/sandbox";
+import AiCompare from "@/components/AiCompare";
 import { DIMENSIONS, PREF_KEYS, type Career } from "@/lib/types";
 
 const MAX = 3;
@@ -18,7 +19,7 @@ function Bar({ value }: { value: number }) {
   );
 }
 
-export default function CompareView({ careers, initial }: { careers: Career[]; initial: string[] }) {
+export default function CompareView({ careers, initial, signedIn }: { careers: Career[]; initial: string[]; signedIn: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const [slugs, setSlugs] = useState<string[]>(initial);
@@ -69,6 +70,8 @@ export default function CompareView({ careers, initial }: { careers: Career[]; i
           </select>
         )}
       </div>
+
+      {picked.length >= 2 && <AiCompare slugs={picked.map((c) => c.slug)} signedIn={signedIn} />}
 
       {picked.length > 0 ? (
         <div className="mt-8 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
