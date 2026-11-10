@@ -9,5 +9,9 @@
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply text-slate-900 antialiased;
+  background-color: #e3eeff;
+  background-image: radial-gradient(1200px 500px at 50% -10%, #c7dcff, transparent);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
