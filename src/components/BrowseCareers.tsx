@@ -4,10 +4,10 @@ import type { Career } from "@/lib/types";
 export default function BrowseCareers({ careers }: { careers: Career[] }) {
   const sorted = [...careers].sort((a, b) => a.title.localeCompare(b.title));
   return (
-    <section className="mt-16">
-      <h2 className="text-center text-2xl font-bold">Browse every career</h2>
+    <section className="mt-12 rounded-2xl bg-white p-6 shadow-sm sm:p-8">
+      <h2 className="text-center text-2xl font-bold">Browse careers</h2>
       <p className="mx-auto mt-2 max-w-2xl text-center text-slate-600">
-        Already curious about one? Open it for pay, training and outlook, or put a few side by side.
+        Tap any career to see pay, training and outlook.
       </p>
       <ul className="mt-6 flex flex-wrap justify-center gap-2">
         {sorted.map((c) => (
