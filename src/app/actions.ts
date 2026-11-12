@@ -69,7 +69,9 @@ export async function compareWithAI(slugs: string[]): Promise<AiCompareResult> {
       facts.join("\n\n"),
     );
     return { text };
-  } catch {
-    return { error: "The AI couldn't answer right now. Try again in a moment." };
+  } catch (e) {
+    const reason = e instanceof Error ? e.message : String(e);
+    console.error("compareWithAI failed:", reason);
+    return { error: `The AI couldn't answer right now (${reason}).` };
   }
 }
