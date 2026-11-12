@@ -18,7 +18,7 @@ export default async function Header() {
   const email = await getEmail();
 
   return (
-    <header className="sticky top-0 z-10 border-b border-brand-100 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-10 pt-[env(safe-area-inset-top)] border-b border-brand-100 bg-white/80 backdrop-blur">
       <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
         <Link href="/" aria-label="Career E-Sandbox home" className="flex shrink-0 items-center gap-2 text-lg font-bold text-slate-900">
           <Logo size={28} />
