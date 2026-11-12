@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CareerFacts from "@/components/CareerFacts";
 import JobPostings from "@/components/JobPostings";
+import LiveJobs from "@/components/LiveJobs";
 import SaveOrSignIn from "@/components/SaveOrSignIn";
 import SkillTags from "@/components/SkillTags";
 import TrainingPrograms from "@/components/TrainingPrograms";
 import { getCareer } from "@/lib/careers";
+import { getLiveJobs } from "@/lib/liveJobs";
 import { getJobPostings, getPrograms } from "@/lib/opportunities";
 import { getSavedSlugs, getUserId } from "@/lib/user";
 
@@ -14,7 +16,12 @@ export default async function CareerPage({ params }: { params: Promise<{ slug: s
   const career = await getCareer(slug);
   if (!career) notFound();
 
-  const [userId, jobs, programs] = await Promise.all([getUserId(), getJobPostings(slug), getPrograms(slug)]);
+  const [userId, jobs, programs, liveJobs] = await Promise.all([
+    getUserId(),
+    getJobPostings(slug),
+    getPrograms(slug),
+    getLiveJobs(career.title),
+  ]);
   const saved = userId ? (await getSavedSlugs()).has(slug) : false;
 
   return (
@@ -28,6 +35,7 @@ export default async function CareerPage({ params }: { params: Promise<{ slug: s
       <CareerFacts career={career} />
       <SkillTags skills={career.skills} />
       <TrainingPrograms programs={programs} />
+      <LiveJobs jobs={liveJobs} />
       <JobPostings jobs={jobs} />
       <Link href={`/compare?c=${slug}`} className="mt-8 inline-block rounded-xl border border-slate-300 bg-white px-5 py-2.5 font-medium hover:border-brand-500">
         Compare with other careers
