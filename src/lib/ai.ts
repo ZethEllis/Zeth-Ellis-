@@ -21,7 +21,11 @@ export async function askGemini(system: string, prompt: string): Promise<string>
       ],
     }),
   });
-  if (!res.ok) throw new Error(`OpenRouter ${res.status}`);
+  if (!res.ok) {
+    // OpenRouter explains refusals (no credit, unknown model, bad key) in the body; keep it so the cause is visible.
+    const body = await res.json().catch(() => null);
+    throw new Error(`OpenRouter ${res.status}: ${body?.error?.message ?? res.statusText}`);
+  }
   const data = await res.json();
   const text: string | undefined = data.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty reply");
