@@ -1,10 +1,21 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "Career E-Sandbox — explore careers, don’t take a test",
   description: "An environment for exploring career possibilities: experiment, compare perspectives, question recommendations and learn about yourself.",
+  applicationName: "Career E-Sandbox",
+  // iPhone "Add to Home Screen": open full screen with its own name, like an app
+  appleWebApp: { capable: true, title: "E-Sandbox", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
