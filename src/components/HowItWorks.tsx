@@ -8,7 +8,7 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section className="mt-4">
+    <section id="how-it-works" className="mt-4 scroll-mt-24">
       <div className="grid gap-4 sm:grid-cols-3">
         {STEPS.map((s) => <StepCard key={s.n} {...s} />)}
       </div>
